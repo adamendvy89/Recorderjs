@@ -4,6 +4,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Live input record and playback</title>
+	 <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
   <style type='text/css'>
     ul { list-style: none; }
     #recordingslist audio { display: block; margin-bottom: 10px; }
@@ -69,7 +70,8 @@
       var li = document.createElement('li');
       var au = document.createElement('audio');
       var hf = document.createElement('a');
-      
+      var bt = document.createElement('button');
+	  
       au.controls = true;
       au.src = url;
       hf.href = url;
@@ -78,9 +80,25 @@
       li.appendChild(au);
       li.appendChild(hf);
       recordingslist.appendChild(li);
+	  bt.textContent = "Send post";
+	  
+	  bt.onclick =  function(){ sendWaveToPost(blob); }
+	  li.appendChild(bt);
     });
   }
-
+function sendWaveToPost(blob) {
+	var file2 = new FileReader();
+	file2.onloadend = function(e){				 
+				$.ajax({
+					url: "/server/postWav.php",
+					type: "POST",
+					data: file2.result,
+					processData: false,
+					contentType : "text/plain"
+				});
+			} ;
+	file2.readAsDataURL( blob );
+}
   window.onload = function init() {
     try {
       // webkit shim
